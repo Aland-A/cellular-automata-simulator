@@ -3,8 +3,8 @@ import Row from "./components/Row";
 import { useState, useRef, useEffect } from "react";
 
 function App() {
-  const row = 50;
-  const column = 50;
+  const row = 20;
+  const column = 20;
   const [gen, setGen] = useState(0);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef(null);
@@ -173,6 +173,33 @@ function App() {
           onClick={generate}
         >
           Next Generation
+        </button>
+        <button
+          style={{
+            padding: "12px 24px",
+            fontSize: "16px",
+            backgroundColor: "#9C27B0",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            margin: "0 10px",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            transition: "background-color 0.3s ease",
+            ":hover": {
+              backgroundColor: "#7B1FA2",
+            },
+          }}
+          onClick={() => {
+            setUniverse(
+              Array(row)
+                .fill()
+                .map(() => Array(column).fill(false))
+            );
+            setGen(0);
+          }}
+        >
+          Clear
         </button>
       </div>
       <div
