@@ -3,11 +3,12 @@ import Row from "./components/Row";
 import { useState, useRef, useEffect } from "react";
 
 function App() {
-  const row = 20;
-  const column = 20;
+  const [row, setRow] = useState(20);
+  const [column, setColumn] = useState(20);
   const [gen, setGen] = useState(0);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef(null);
+  const [speed, setSpeed] = useState(500);
 
   const [universe, setUniverse] = useState(
     Array(row)
@@ -32,14 +33,14 @@ function App() {
   // Handle the interval when running changes
   useEffect(() => {
     if (running) {
-      intervalRef.current = setInterval(generate, 10); // every second
+      intervalRef.current = setInterval(generate, speed); // every second
     } else {
       clearInterval(intervalRef.current);
     }
 
     // Cleanup on unmount
     return () => clearInterval(intervalRef.current);
-  }, [running, universe]);
+  }, [running, universe, speed]);
 
   function generate() {
     // console.log(universe[0]);
@@ -129,11 +130,50 @@ function App() {
     // console.log(nextUniverse);
 
     setGen(gen + 1);
+
+    // Check if universe is all false
+    const isAllFalse = nextUniverse.every((row) => row.every((cell) => !cell));
+    if (isAllFalse) {
+      setRunning(false);
+      if (gen != 0) alert(`Simulation ended at generation ${gen}`);
+      else
+        alert(
+          `You need to activate some cells by clicking on them before starting!`
+        );
+      setGen(0);
+    }
   }
 
   return (
     <div className="App">
       <div className="button-container" style={{ margin: "20px 0" }}>
+        <div style={{ marginBottom: "20px" }}>
+          Dimensions:
+          <input
+            type="number"
+            value={row}
+            onChange={(e) => setRow(parseInt(e.target.value))}
+            style={{
+              padding: "8px",
+              margin: "0 10px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+            placeholder="Rows"
+          />
+          <input
+            type="number"
+            value={column}
+            onChange={(e) => setColumn(parseInt(e.target.value))}
+            style={{
+              padding: "8px",
+              margin: "0 10px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+            placeholder="Columns"
+          />
+        </div>
         <button
           style={{
             padding: "12px 24px",
@@ -197,10 +237,27 @@ function App() {
                 .map(() => Array(column).fill(false))
             );
             setGen(0);
+            setRunning(false);
           }}
         >
           Clear
         </button>
+        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
+          Speed:
+          <input
+            type="range"
+            min="10"
+            max="1000"
+            defaultValue="500"
+            onChange={(e) => {
+              setSpeed(Number(e.target.value));
+            }}
+            style={{
+              width: "200px",
+              margin: "0 10px",
+            }}
+          />
+        </div>
       </div>
       <div
         style={{
